@@ -24,6 +24,9 @@ jobs:
           distribution: "adopt"
           java-version: "17"
 
+      - name: Check Java Installation
+        run: java -version
+
       - name: App Build
         run: |
           ./mvnw clean install
