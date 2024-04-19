@@ -13,8 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: default
-    container:
-      image: docker:latest
     steps:
       - uses: actions/checkout@v3
 
