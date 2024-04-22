@@ -22,9 +22,6 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Check Java Installation
-        run: java -version
-
       - name: App Build
         run: |
           ./mvnw clean install
@@ -32,6 +29,12 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -f Dockerfile . -t tbeit/webgoat:$GITHUB_RUN_ID
+
+      - name: Docker Scout Scan
+        uses: docker/scout-action@v1.7.0
+        with:
+          command:
+            image: tbeit/webgoat:$GITHUB_RUN_ID
 
       - name: Docker Hub Login
         run: docker login -u tbeit -p ${{ secrets.DOCKER_PASSWORD }}
