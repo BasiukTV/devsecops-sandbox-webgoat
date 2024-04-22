@@ -30,14 +30,14 @@ jobs:
         run: |
           docker build -f Dockerfile . -t tbeit/webgoat:$GITHUB_RUN_ID
 
+      - name: Docker Hub Login
+        run: docker login -u tbeit -p ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Docker Scout Scan
         uses: docker/scout-action@v1.7.0
         with:
-          command:
-            image: tbeit/webgoat:$GITHUB_RUN_ID
-
-      - name: Docker Hub Login
-        run: docker login -u tbeit -p ${{ secrets.DOCKER_PASSWORD }}
+          command: quickview,compare,cves,recommendations
+          image: tbeit/webgoat:$GITHUB_RUN_ID
 
       - name: Push Docker Image to Docker Hub
         run: docker push tbeit/webgoat:$GITHUB_RUN_ID
