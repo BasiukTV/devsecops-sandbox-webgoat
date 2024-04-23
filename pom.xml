@@ -108,11 +108,6 @@
   </issueManagement>
 
   <properties>
-    <sonar.organization>tb-eit</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-  </properties>
-
-  <properties>
     <!-- Shared properties with plugins and version numbers across submodules-->
     <asciidoctorj.version>2.5.10</asciidoctorj.version>
     <bootstrap.version>5.3.2</bootstrap.version>
@@ -143,6 +138,8 @@
     <!-- Use UTF-8 Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <sonar.organization>tb-eit</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <thymeleaf.version>3.1.1.RELEASE</thymeleaf.version>
     <webdriver.version>5.6.3</webdriver.version>
     <webgoat.context>/</webgoat.context>
