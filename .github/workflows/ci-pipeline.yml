@@ -36,8 +36,7 @@ jobs:
       - name: Docker Scout Scan
         uses: docker/scout-action@v1.7.0
         with:
-          command: quickview,compare,cves,recommendations
-          image: local://tbeit/webgoat:$GITHUB_RUN_ID
+          command: quickview,cves,recommendations
 
       - name: Push Docker Image to Docker Hub
         run: docker push tbeit/webgoat:$GITHUB_RUN_ID
