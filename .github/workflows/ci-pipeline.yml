@@ -29,9 +29,11 @@ jobs:
         run: |
           ./mvnw clean install
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=TB-EIT_devsecops-sandbox
-          echo '## Sonar Cloud Approval Gate \n [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=TB-EIT_devsecops-sandbox)](https://sonarcloud.io/summary/new_code?id=TB-EIT_devsecops-sandbox)' >> $GITHUB_STEP_SUMMARY
+          echo '## Sonar Cloud Scan Approval Gate' >> $GITHUB_STEP_SUMMARY
+          echo '[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=TB-EIT_devsecops-sandbox)](https://sonarcloud.io/summary/new_code?id=TB-EIT_devsecops-sandbox)' >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload App Jar Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: webgoat-jar
           path: target/webgoat-*.jar
