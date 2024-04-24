@@ -22,18 +22,13 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: App Build # & Sonar Cloud Scan
+      - name: App Build & Sonar Cloud Scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           ./mvnw clean install
-        # mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=TB-EIT_devsecops-sandbox
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=TB-EIT_devsecops-sandbox
 
       - name: Build Docker image
         run: |
