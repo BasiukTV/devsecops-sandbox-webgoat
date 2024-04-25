@@ -29,7 +29,7 @@ jobs:
         run: |
           ./mvnw clean install
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=TB-EIT_devsecops-sandbox
-          echo '## Sonar Cloud Scan Approval Gate' >> $GITHUB_STEP_SUMMARY
+          echo '## Sonar Cloud Scan Quality Check' >> $GITHUB_STEP_SUMMARY
           echo '[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=TB-EIT_devsecops-sandbox)](https://sonarcloud.io/summary/new_code?id=TB-EIT_devsecops-sandbox)' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload App Jar Artifact
@@ -43,7 +43,9 @@ jobs:
           docker build -f Dockerfile . -t tbeit/webgoat:$GITHUB_RUN_ID
 
       - name: Docker Hub Login
-        run: docker login -u tbeit -p ${{ secrets.DOCKER_PASSWORD }}
+        run: | 
+          docker login -u tbeit -p ${{ secrets.DOCKER_PASSWORD }}
+          echo '## Docker Scout Scan Results' >> $GITHUB_STEP_SUMMARY
 
       - name: Docker Scout Scan
         uses: docker/scout-action@v1.7.0
