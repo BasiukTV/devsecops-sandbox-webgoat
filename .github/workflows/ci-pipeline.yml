@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: default
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Java
         uses: actions/setup-java@v4
@@ -61,12 +61,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: default
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: hashicorp/setup-terraform@v3
 
       # Will check Terraform Configuration Formatting
-      # (any output of terraform fmt will be redirected to std error, failing the job)
+      # (any output of terraform fmt will be considered an error)
       - name: Terraform Format Check
         run: |
           dir="automation/iac/app_svc/terraform"
