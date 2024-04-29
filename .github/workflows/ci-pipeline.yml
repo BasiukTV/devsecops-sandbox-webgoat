@@ -69,5 +69,14 @@ jobs:
       # (any output of terraform fmt will be redirected to std error, failing the job)
       - name: Terraform Format Check
         run: |
-          cd automation/iac/app_svc/terraform
-          terraform fmt >&2
+          dir="automation/iac/app_svc/terraform"
+          echo "Running Terraform Format check in the following directory: $dir"
+          cd $dir
+          output=$(terraform fmt)
+          if [ -z "$output" ]; then
+            echo "Terraform Format check is successful."
+          else
+            echo "Terraform Format check failed for the following files:"
+            echo "$output"
+            exit 1
+          fi
