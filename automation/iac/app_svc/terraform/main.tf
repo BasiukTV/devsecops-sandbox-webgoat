@@ -18,8 +18,8 @@ module "app_svc_mod" {
   source = "git::https://gitlab.com/BasiukTV/azure-sandbox.git//automation/iac/app_service/terraform?ref=main"
 
   # Make the module use use our deprtment, app, location and stage
-  dept  = var.dept
-  app   = var.app
+  dept       = var.dept
+  app   =     var.app
   stage = var.stage
   loc   = var.loc
 }
