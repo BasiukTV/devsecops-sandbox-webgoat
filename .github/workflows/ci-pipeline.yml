@@ -62,6 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: default
     env:
+      TF_HOME: "automation/iac/app_svc/terraform"
       TF_VAR_tenant_id: ${{ secrets.AZ_TENANT_ID }}
       TF_VAR_subscription_id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
       TF_VAR_client_id: ${{ secrets.AZ_SP_CLIENT_ID }}
@@ -75,9 +76,8 @@ jobs:
       # (any output of terraform fmt will be considered an error)
       - name: Terraform Format Check
         run: |
-          dir="automation/iac/app_svc/terraform"
-          echo "Running Terraform Format check in the following directory: $dir"
-          cd $dir
+          echo "Running Terraform Format check in the following directory: $TF_HOME"
+          cd $TF_HOME
           output=$(terraform fmt)
           if [ -z "$output" ]; then
             echo "Terraform Format check is successful."
@@ -90,7 +90,7 @@ jobs:
 
       - name: Terraform Validate Check
         run: |
-          cd automation/iac/app_svc/terraform
+          cd $TF_HOME
           terraform init
           terraform validate
           cd -
@@ -98,4 +98,4 @@ jobs:
       - name: TFSec Scan
         uses: aquasecurity/tfsec-action@v1.0.0
         with:
-          additional_args: --custom-check-dir automation/iac/app_svc/terraform
+          additional_args: --custom-check-dir $TF_HOME --gif
