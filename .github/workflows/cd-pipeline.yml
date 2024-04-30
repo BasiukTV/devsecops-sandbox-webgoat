@@ -1,16 +1,15 @@
 name: 20 CD Pipeline
 
 on:
-  push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["10 CI Pipeline"] # This pipeline runs after the CI pipeline.
+    types:
+      - completed
 
 jobs:
-  build-test-docker:
+  test:
     runs-on: ubuntu-latest
-    needs: [build-test-docker, terraform-validate]
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Don't run if CI run failed
     steps:
       - name: Say Hello
         run: echo "Hello from CD pipeline!"
