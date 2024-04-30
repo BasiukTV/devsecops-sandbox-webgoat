@@ -23,3 +23,30 @@ variable "loc" {
   type        = string
   default     = "eastus"
 }
+
+// Azure Service Principle Credentials
+
+variable "tenant_id" {
+  description = "Tenant ID of the service principle that will be doing the deployment."
+  type        = string
+  default     = null
+}
+
+variable "subscription_id" {
+  description = "Subscription ID of the service principle that will be doing the deployment."
+  type        = string
+  default     = null
+}
+
+variable "client_id" {
+  description = "Client ID of the service principle that will be doing the deployment."
+  type        = string
+  default     = null
+}
+
+variable "client_secret" {
+  description = "Client secret of the service principle that will be doing the deployment."
+  type        = string
+  sensitive   = true
+  default     = null
+}
