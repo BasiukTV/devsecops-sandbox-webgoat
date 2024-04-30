@@ -93,3 +93,9 @@ jobs:
           cd automation/iac/app_svc/terraform
           terraform init
           terraform validate
+          cd -
+
+      - name: TFSec Scan
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          additional_args: --custom-check-dir automation/iac/app_svc/terraform
