@@ -10,12 +10,40 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }} # Don't run if CI run failed
+    env:
+      TF_HOME: terraform/
+      TF_VAR_tenant_id: ${{ secrets.AZ_TENANT_ID }}
+      TF_VAR_subscription_id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      TF_VAR_client_id: ${{ secrets.AZ_SP_CLIENT_ID }}
+      TF_VAR_client_secret: ${{ secrets.AZ_SP_CLIENT_SECRET }}
+
     steps:
+      - uses: hashicorp/setup-terraform@v3
+
       - name: Downloading Terraform Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: terraform
-          workflow: "10 CI Pipeline"
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check Terraform directory
         run: ls terraform
+
+      - name: Terraform Init
+        run: |
+          cd $TF_HOME
+          terraform init
+          cd -
+
+      - name: Terraform Plan
+        run: |
+          cd $TF_HOME
+          terraform plan -out=plan.out
+          cd -
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-test
+          path: $TF_HOME/plan.out

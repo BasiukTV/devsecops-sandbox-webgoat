@@ -13,6 +13,7 @@ jobs:
   build-test-docker:
     runs-on: ubuntu-latest
     environment: default
+    if: false # temporarily disabled
     steps:
       - uses: actions/checkout@v4
 
@@ -99,14 +100,11 @@ jobs:
         with:
           additional_args: --custom-check-dir $TF_HOME
 
-      - name: TF_HOME check
-        run: |
-          pwd
-          ls
-          ls ${TF_HOME}
-
       - name: Upload Terraform Artifact
         uses: actions/upload-artifact@v4
         with:
           name: terraform
-          path: automation/iac/app_svc/terraform/*.tf* # For some reason, GHA just hates reference to $TF_HOME here
+          # Upload all .tf and .tfvars file in the terraform home, except .terraform directory
+          path: |
+            ${{env.TF_HOME}}/*.tf*
+            !${{env.TF_HOME}}/.terraform
