@@ -11,5 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }} # Don't run if CI run failed
     steps:
-      - name: Say Hello
-        run: echo "Hello from CD pipeline!"
+      - name: Downloading Terraform Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform
+          workflow: "10 CI Pipeline"
+
+      - name: Check Terraform directory
+        run: ls terraform
