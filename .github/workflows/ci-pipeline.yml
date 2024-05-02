@@ -13,7 +13,6 @@ jobs:
   build-test-docker:
     runs-on: ubuntu-latest
     environment: default
-    if: false # temporarily disabled
     steps:
       - uses: actions/checkout@v4
 

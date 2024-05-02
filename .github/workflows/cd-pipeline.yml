@@ -22,6 +22,7 @@ jobs:
       tf_backend_rg: ${{ secrets.AZ_TF_BACKEND_RG}}
       tf_backend_sa_name: ${{ secrets.AZ_TF_BACKEND_SA_NAME}}
       tf_backend_container: ${{ secrets.AZ_TF_BACKEND_CONTAINER}}
+      RUN_ID: ${{ github.event.workflow_run.id }}
 
     steps:
       - uses: hashicorp/setup-terraform@v3
@@ -31,7 +32,7 @@ jobs:
         with:
           name: terraform
           path: ${{ env.TF_HOME }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ env.RUN_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Init
@@ -64,14 +65,26 @@ jobs:
           terraform apply --auto-approve plan.out
 
           mkdir out
-          terraform output rg_name > out/rg_name.txt
-          terraform output app_svc_plan_name > out/app_svc_plan_name.txt
-          terraform output app_svc_name > out/rg_naapp_svc_nameme.txt
+          terraform output -raw rg_name > out/rg_name.txt
+          terraform output -raw app_svc_plan_name > out/app_svc_plan_name.txt
+          terraform output -raw app_svc_name > out/app_svc_name.txt
 
           cd - >/dev/null
 
-      - name: Upload Terraform Apply Output Artifact
-        uses: actions/upload-artifact@v4
+      - name: Azure CLI Login
+        uses: azure/login@v2
         with:
-          name: terraform-apply-output
-          path: ${{ env.TF_HOME }}/out
+          creds: '{"clientId":"${{ env.ARM_CLIENT_ID }}","clientSecret":"${{ env.ARM_CLIENT_SECRET }}","subscriptionId":"${{ env.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ env.ARM_TENANT_ID }}"}'
+
+      - name: Azure CLI App Deployment
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            cd $TF_HOME
+            az webapp create \
+              --name $(cat out/app_svc_name.txt) \
+              --plan $(cat out/app_svc_plan_name.txt) \
+              --resource-group $(cat out/rg_name.txt) \
+              --deployment-container-image-name docker.io/tbeit/webgoat:$RUN_ID
+            cd - >/dev/null
