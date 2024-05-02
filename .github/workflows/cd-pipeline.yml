@@ -50,9 +50,9 @@ jobs:
           cd $TF_HOME
           terraform plan -out=plan.out
           echo '## Terraform Plan Summary' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '<details><summary>Show</summary>```' >> $GITHUB_STEP_SUMMARY
           terraform show -no-color plan.out >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '```</details>' >> $GITHUB_STEP_SUMMARY
           cd - >/dev/null
 
       - name: Upload Terraform Plan
