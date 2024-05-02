@@ -18,7 +18,7 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
       ARM_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
-      TF_HOME: terraform/
+      TF_HOME: terraform
       tf_backend_rg: ${{ secrets.AZ_TF_BACKEND_RG}}
       tf_backend_sa_name: ${{ secrets.AZ_TF_BACKEND_SA_NAME}}
       tf_backend_container: ${{ secrets.AZ_TF_BACKEND_CONTAINER}}
@@ -43,13 +43,17 @@ jobs:
             -backend-config="storage_account_name=$tf_backend_sa_name" \
             -backend-config="container_name=$tf_backend_container" \
             -backend-config="key=webg-test.tfstate"
-          cd -
+          cd - >/dev/null
 
       - name: Terraform Plan
         run: |
           cd $TF_HOME
           terraform plan -out=plan.out
-          cd -
+          echo '## Terraform Plan Summary' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          terraform show -no-color plan.out >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cd - >/dev/null
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v4
