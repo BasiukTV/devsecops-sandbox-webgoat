@@ -48,15 +48,30 @@ jobs:
       - name: Terraform Plan
         run: |
           cd $TF_HOME
-          terraform plan -out=plan.out
+
+          terraform plan -var-file=test.tfvars -out=plan.out
+
           echo '## Terraform Plan Summary' >> $GITHUB_STEP_SUMMARY
-          echo '<details><summary>Show</summary>```' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
           terraform show -no-color plan.out >> $GITHUB_STEP_SUMMARY
-          echo '```</details>' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
           cd - >/dev/null
 
-      - name: Upload Terraform Plan
+      - name: Terraform Apply
+        run: |
+          cd $TF_HOME
+          terraform apply --auto-approve plan.out
+
+          mkdir out
+          terraform output rg_name > out/rg_name.txt
+          terraform output app_svc_plan_name > out/app_svc_plan_name.txt
+          terraform output app_svc_name > out/rg_naapp_svc_nameme.txt
+
+          cd - >/dev/null
+
+      - name: Upload Terraform Apply Output Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-plan-test
-          path: ${{ env.TF_HOME }}/plan.out
+          name: terraform-apply-output
+          path: ${{ env.TF_HOME }}/out
