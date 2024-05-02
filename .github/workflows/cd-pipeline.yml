@@ -9,13 +9,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Don't run if CI run failed
+
+    # Only run this job (and workflow) if initially triggered by push to main and CI workflow succeeded
+    if: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success' }}
+    environment: default
     env:
+      ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
       TF_HOME: terraform/
-      TF_VAR_tenant_id: ${{ secrets.AZ_TENANT_ID }}
-      TF_VAR_subscription_id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-      TF_VAR_client_id: ${{ secrets.AZ_SP_CLIENT_ID }}
-      TF_VAR_client_secret: ${{ secrets.AZ_SP_CLIENT_SECRET }}
+      tf_backend_rg: ${{ secrets.AZ_TF_BACKEND_RG}}
+      tf_backend_sa_name: ${{ secrets.AZ_TF_BACKEND_SA_NAME}}
+      tf_backend_container: ${{ secrets.AZ_TF_BACKEND_CONTAINER}}
 
     steps:
       - uses: hashicorp/setup-terraform@v3
@@ -24,16 +30,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform
+          path: ${{ env.TF_HOME }}
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check Terraform directory
-        run: ls terraform
 
       - name: Terraform Init
         run: |
           cd $TF_HOME
-          terraform init
+          terraform -version
+          terraform init \
+            -backend-config="resource_group_name=$tf_backend_rg" \
+            -backend-config="storage_account_name=$tf_backend_sa_name" \
+            -backend-config="container_name=$tf_backend_container" \
+            -backend-config="key=webg-test.tfstate"
           cd -
 
       - name: Terraform Plan
@@ -46,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-test
-          path: $TF_HOME/plan.out
+          path: ${{ env.TF_HOME }}/plan.out

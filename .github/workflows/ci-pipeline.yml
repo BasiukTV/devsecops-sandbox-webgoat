@@ -62,11 +62,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: default
     env:
+      ARM_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZ_SP_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZ_SP_CLIENT_SECRET }}
       TF_HOME: automation/iac/app_svc/terraform
-      TF_VAR_tenant_id: ${{ secrets.AZ_TENANT_ID }}
-      TF_VAR_subscription_id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-      TF_VAR_client_id: ${{ secrets.AZ_SP_CLIENT_ID }}
-      TF_VAR_client_secret: ${{ secrets.AZ_SP_CLIENT_SECRET }}
+      tf_backend_rg: ${{ secrets.AZ_TF_BACKEND_RG}}
+      tf_backend_sa_name: ${{ secrets.AZ_TF_BACKEND_SA_NAME}}
+      tf_backend_container: ${{ secrets.AZ_TF_BACKEND_CONTAINER}}
     steps:
       - uses: actions/checkout@v4
 
@@ -91,7 +94,11 @@ jobs:
       - name: Terraform Validate Check
         run: |
           cd $TF_HOME
-          terraform init
+          terraform init \
+            -backend-config="resource_group_name=$tf_backend_rg" \
+            -backend-config="storage_account_name=$tf_backend_sa_name" \
+            -backend-config="container_name=$tf_backend_container" \
+            -backend-config="key=webg-test.tfstate"
           terraform validate
           cd -
 
