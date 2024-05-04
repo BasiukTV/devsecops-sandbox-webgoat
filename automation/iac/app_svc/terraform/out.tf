@@ -13,3 +13,8 @@ output "app_svc_name" {
   value       = module.app_svc_mod.app_svc_name
 }
 
+output "app_svc_url" {
+  description = "URL of the provisioned App Service."
+  value       = module.app_svc_mod.app_svc_url
+}
+
